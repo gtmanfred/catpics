@@ -1,6 +1,6 @@
 from flask.ext.login import login_user, logout_user, login_required
-from flask import request, flash, url_for, redirect, render_template, g, jsonify, abort
-from catpics import app, db, User, auth
+from flask import request, jsonify, abort
+from catpics import app, db, User, g
 from catpics.api.auth import require_role
 
 @app.route("/api/tokens", methods=["POST"])
