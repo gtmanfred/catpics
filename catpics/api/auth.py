@@ -5,8 +5,6 @@ def require_role(role):
     def wrapper(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            print(role)
-            print(g.user.info)
             if role not in g.user.info.get('roles', []):
                 return abort(403)
             return f(*args, **kwargs)

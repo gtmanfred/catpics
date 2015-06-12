@@ -15,7 +15,8 @@ def create_user():
     json_dict = request.get_json(force=True)
     if 'username' not in json_dict or 'password' not in json_dict:
         abort(400)
-    user = User(roles=['admin'], **json_dict)
+
+    user = User(**json_dict)
     db.session.add(user)
     db.session.commit()
     return jsonify({"status": "success"})
@@ -26,3 +27,7 @@ def create_user():
 def index():
     ret = {x:y for x, y in g.user.__dict__.items() if not x.startswith('_')}
     return jsonify(ret)
+
+@app.route('/random')
+def random_image():
+    return jsonify({"status": "in progress"})
