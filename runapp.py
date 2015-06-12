@@ -1,0 +1,3 @@
+import catpics
+
+catpics.run()
