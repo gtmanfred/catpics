@@ -1,17 +1,20 @@
 # Import python libraries
-from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.hash import sha512_crypt
 
 from catpics import db, app, UserMixin
+from sqlalchemy.dialects.postgresql import JSON
 
 class User(db.Model):
     __tablename__ = 'users'
     username = db.Column(db.String(255), unique=True, primary_key=True)
-    pw_hash = db.Column(db.String(255))
-    def __init__(self, username, password):
+    info = db.Column(JSON)
+    def __init__(self, username, password, roles=[]):
         self.username = username
-        self.pw_hash = sha512_crypt.encrypt(password)
+        self.info = {
+            'password': sha512_crypt.encrypt(password),
+            'roles': roles
+        }
 
     def generate_auth_token(self):
         s = Serializer(app.config['SECRET_KEY'])
@@ -30,7 +33,7 @@ class User(db.Model):
         return user
 
     def check_password(self, password):
-        return sha512_crypt.verify(password, self.pw_hash)
+        return sha512_crypt.verify(password, self.info['password'])
 
     def is_authenticated(self):
         return True
