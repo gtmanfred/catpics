@@ -7,22 +7,18 @@ from catpics import db, app, UserMixin
 
 class User(db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(255), unique=True, primary_key=True)
     pw_hash = db.Column(db.String(255))
-    activated = db.Column(db.Boolean(True))
-    confirmed_at = db.Column(db.DateTime())
     def __init__(self, username, password):
         self.username = username
         self.pw_hash = sha512_crypt.encrypt(password)
-        self.activated = True
 
-    def generate_auth_token(self, expiration = 600):
-        s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
-        return s.dumps({ 'id': self.id })
+    def generate_auth_token(self):
+        s = Serializer(app.config['SECRET_KEY'])
+        return s.dumps({ 'username': self.username})
 
-    @staticmethod
-    def verify_auth_token(token):
+    @classmethod
+    def verify_auth_token(cls, token):
         s = Serializer(app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
@@ -30,7 +26,7 @@ class User(db.Model):
             return None # valid token, but expired
         except BadSignature:
             return None # invalid token
-        user = User.query.get(data['id'])
+        user = User.query.get(data['username'])
         return user
 
     def check_password(self, password):
@@ -40,15 +36,14 @@ class User(db.Model):
         return True
  
     def is_active(self):
-        return self.activated
+        return True
  
     def is_anonymous(self):
         return False
  
-    def get_id(self):
-        return str(self.id)
+    @classmethod
+    def get(cls, username):
+        return cls.query.get(username)
  
     def __repr__(self):
         return '<User %r>' % (self.username)
-
-

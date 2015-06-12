@@ -27,8 +27,17 @@ class User(db.Model, UserMixin):
         self.username = username
         self.password = password
 
-    def generate_auth_token(self, expiration = 600):
-        s = Serializer(app.config['SECRET_KEY'], expires_in = expiration)
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def check_password(self, password):
+        return self.password == password
+
+    def generate_auth_token(self):
+        s = Serializer(app.config['SECRET_KEY'])
         return s.dumps({ 'username': self.username})
 
     @classmethod
@@ -40,31 +49,25 @@ class User(db.Model, UserMixin):
             return None # valid token, but expired
         except BadSignature:
             return None # invalid token
-        user = User.get(data['username'])
-        return User(user[0], user[1])
+        user = User.query.get(data['username'])
+        return user
 
     @classmethod
     def get(cls, username):
-        return cls.user_database.get(username)
+        return cls.query.get(username)
 
 
 @login_manager.request_loader
 def load_user(request):
     token = request.headers.get('X-Auth-Token')
-    if not token:
-        json_dict = request.get_json(force=True)
-        if not json_dict:
-            abort(401)
-        username = json_dict.get('username')
-        password = json_dict.get('password')
-        user_entry = User.get(username)
-        if user_entry is not None:
-            user = User(user_entry[0], user_entry[1])
-            if user.password == password:
-                return user
-    else:
+    if token:
         return User.verify_auth_token(token)
-
+    else:
+        username = request.headers.get('X-Username')
+        password = request.headers.get('X-Password')
+        user = User.query.get(username)
+        if user.check_password(password):
+            return user
     return None
 
 @app.route("/api/tokens", methods=["POST"])
