@@ -26,6 +26,8 @@ def load_user(request):
     else:
         username = request.headers.get('X-Username')
         password = request.headers.get('X-Password')
+        if username is None:
+            return None
         user = User.query.get(username)
         if user is not None and user.check_password(password):
             return user
