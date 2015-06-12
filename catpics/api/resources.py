@@ -10,7 +10,8 @@ def get_api_token():
 
 
 @app.route("/api/users", methods=["POST"])
-def create():
+@login_required
+def create_user():
     json_dict = request.get_json(force=True)
     if 'username' not in json_dict or 'password' not in json_dict:
         abort(400)
@@ -18,9 +19,3 @@ def create():
     db.session.add(user)
     db.session.commit()
     return jsonify({"status": "success"})
-
-
-@app.route('/index')
-@login_required
-def index():
-    return render_template('index.html')
