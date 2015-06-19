@@ -1,4 +1,5 @@
 from catpics.cloud.auth import CloudApi
+from catpics.libs.utils import get_entry
 
 class CloudFilesApi(CloudApi):
     def _load(self):
