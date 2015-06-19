@@ -27,6 +27,7 @@ class CloudApi(object):
         self.ident = self.session.post(self.identity, data=json.dumps(payload)).json()
         self.token = self.ident['access']['token']['id']
         self.catalog = self.ident['access']['serviceCatalog']
+        self.session.headers['X-Auth-Token'] = self.token
         self._load()
 
     def _load(self):
