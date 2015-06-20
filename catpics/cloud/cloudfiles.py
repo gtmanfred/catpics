@@ -11,6 +11,8 @@ class CloudFilesApi(CloudApi):
     def _load(self):
         endpoints =  get_entry(self.catalog, 'type', 'object-store')['endpoints']
         self.endpoint = get_entry(endpoints, 'region', self.region)['publicURL']
+        endpoints =  get_entry(self.catalog, 'type', 'rax:object-cdn')['endpoints']
+        self.cdnendpoint = get_entry(endpoints, 'region', self.region)['publicURL']
 
     def list_containers(self):
         ret = self.session.get(self.endpoint)
@@ -21,9 +23,39 @@ class CloudFilesApi(CloudApi):
         return ret
 
     def create_container(self, container):
-        ret = self.session.put(os.path.join(self.endpoint, container))
+        ret = self.session.put(
+            os.path.join(self.endpoint, container)
+        )
         if ret:
             return Container(self, container)
+        return False
+
+    def disable_cdn(self, container):
+        ret = self.session.put(
+            os.path.join(self.cdnendpoint, container),
+            headers={'X-Cdn-Enabled': 'False'}
+        )
+        if ret:
+            return Container(self, container)
+        return False
+
+    def enable_cdn(self, container):
+        ret = self.session.put(
+            os.path.join(self.cdnendpoint, container),
+            headers={'X-Cdn-Enabled': 'True'}
+        )
+        if ret:
+            self.links = ret.headers
+            return Container(self, container)
+        return False
+
+    def get_cdn(self, container):
+        ret = self.session.head(
+            os.path.join(self.cdnendpoint, container),
+        )
+        if ret:
+            self.links = ret.headers
+            return self.links
         return False
 
     def delete_container(self, container):
@@ -63,3 +95,12 @@ class Container(CloudFilesApi):
 
     def create_container(self):
         super(Container, self).create_container(self.container)
+
+    def enable_cdn(self):
+        super(Container, self).enable_cdn(self.container)
+
+    def disable_cdn(self):
+        super(Container, self).disable_cdn(self.container)
+
+    def get_cdn(self):
+        super(Container, self).get_cdn(self.container)

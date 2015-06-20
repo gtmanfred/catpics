@@ -1,3 +1,5 @@
+import os
+import random
 from flask.ext.login import login_user, logout_user, login_required
 from flask import request, jsonify, abort
 from catpics import app, db, User, g, cloud
@@ -33,12 +35,17 @@ def index():
 
 @app.route('/random')
 def random_image():
-    return jsonify({"status": "in progress"})
+    api = Container(app.cloud, app.cloud.container)
+    api.get_cdn()
+    image = random.choice(api.list_files())
+    return jsonify({"image": os.path.join(api.links['X-Cdn-Ssl-Uri'], image)})
 
 @app.route('/images/<upload_file>', methods=["POST", "DELETE"])
 def upload_file(upload_file):
     api = Container(app.cloud, app.cloud.container)
     api.create_container()
+    api.enable_cdn()
+    api.get_cdn()
     if request.method == 'POST':
         api.add_file(upload_file, request.stream)
         return jsonify({"files": api.list_files()})
