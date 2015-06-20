@@ -82,7 +82,7 @@ class Container(CloudFilesApi):
         imagetype = imghdr.what(filename, image)
         ret = self.session.put(
             os.path.join(self.endpoint, self.container, filename),
-            files={'file': (filename, image)},
+            data=image,
             headers={'Content-Type': 'image/{0}'.format(imagetype)},
         )
         return ret
