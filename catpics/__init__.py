@@ -7,10 +7,8 @@ import cloud
 app = Flask(__name__)
  
 app.config.from_object('config')
-#app.cloud = cloud
 login_manager = LoginManager()
 login_manager.init_app(app)
-#db = SQLAlchemy(app)
 
 from catpics.api.models import User
 from catpics.api import resources, db, api as apiapp
