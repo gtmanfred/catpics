@@ -40,11 +40,12 @@ class Container(CloudFilesApi):
     def list_files(self):
         ret = self.session.get(os.path.join(self.endpoint, self.container))
         if ret:
-            return ret.text.strip().split('\n')
+            tmp = ret.text.strip().split('\n')
+            if tmp[0]:
+                return tmp
         return []
 
     def add_file(self, filename, content):
-        #ret = put_object(self.endpoint, self.token, self.container, filename, content, content_type='image/jpeg')
         image = content.read()
         imagetype = imghdr.what(filename, image)
         ret = self.session.put(
@@ -53,3 +54,12 @@ class Container(CloudFilesApi):
             headers={'Content-Type': 'image/{0}'.format(imagetype)},
         )
         return ret
+
+    def delete_file(self, filename):
+        ret = self.session.delete(
+            os.path.join(self.endpoint, self.container, filename),
+        )
+        return ret
+
+    def create_container(self):
+        super(Container, self).create_container(self.container)

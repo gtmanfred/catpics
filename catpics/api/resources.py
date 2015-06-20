@@ -35,13 +35,13 @@ def index():
 def random_image():
     return jsonify({"status": "in progress"})
 
-@app.route('/upload/<upload_file>', methods=["POST"])
+@app.route('/images/<upload_file>', methods=["POST", "DELETE"])
 def upload_file(upload_file):
-    print(request.method)
-    print(request.files)
-    print(request.stream.__dict__)
-    api = Container(app.cloud, 'epel')
-    #return jsonify({"files": api.list_files})
-    api.create_container('epel')
-    api.add_file(upload_file, request.stream)
-    return jsonify({"files": api.list_files()})
+    api = Container(app.cloud, app.cloud.container)
+    api.create_container()
+    if request.method == 'POST':
+        api.add_file(upload_file, request.stream)
+        return jsonify({"files": api.list_files()})
+    elif request.method == 'DELETE':
+        api.delete_file(upload_file)
+        return jsonify({"files": api.list_files()})
