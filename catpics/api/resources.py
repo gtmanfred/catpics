@@ -14,6 +14,7 @@ def get_api_token():
     token = g.user.generate_auth_token()
     return jsonify({"token": token.decode('utf-8')})
 
+
 @app.route("/api/users", methods=["POST"])
 @login_required
 def create_user():
@@ -26,29 +27,27 @@ def create_user():
     db.session.commit()
     return jsonify({"status": "success"})
 
-@app.route('/index')
-@login_required
-@require_role('admin')
-def index():
-    ret = {x:y for x, y in g.user.__dict__.items() if not x.startswith('_')}
-    return jsonify(ret)
 
-@app.route('/random')
+@app.route('/api/random')
 def random_image():
     api = Container(app.cloud, app.cloud.container)
     api.get_cdn()
     image = random.choice(api.list_files())
     return jsonify({"image": os.path.join(api.links['X-Cdn-Ssl-Uri'], image)})
 
-@app.route('/images/<upload_file>', methods=["POST", "DELETE"])
-def upload_file(upload_file):
+
+@app.route('/images/<image>', methods=["GET", "POST", "DELETE"])
+@login_required
+@require_role('user')
+def upload_file(image):
     api = Container(app.cloud, app.cloud.container)
     api.create_container()
     api.enable_cdn()
     api.get_cdn()
     if request.method == 'POST':
-        api.add_file(upload_file, request.stream)
+        api.add_file(image, request.stream)
         return jsonify({"files": api.list_files()})
     elif request.method == 'DELETE':
-        api.delete_file(upload_file)
+        api.delete_file(image)
         return jsonify({"files": api.list_files()})
+    return jsonify({"image": os.path.join(api.links['X-Cdn-Ssl-Uri'], image)})
