@@ -1,21 +1,22 @@
 import os
 import random
 from flask.ext.login import login_user, logout_user, login_required
-from flask import request, jsonify, abort
-from catpics import app, db, User, g, cloud
+from flask import request, jsonify, abort, g
+
+import cloud
+from catpics.api import db, User, api
 from catpics.api.auth import require_role
 
 from catpics.cloud.cloudfiles import Container
 
-
-@app.route("/api/tokens", methods=["POST"])
+@api.route("/tokens", methods=["POST"])
 @login_required
 def get_api_token():
     token = g.user.generate_auth_token()
     return jsonify({"token": token.decode('utf-8')})
 
 
-@app.route("/api/users", methods=["POST"])
+@api.route("/users", methods=["POST"])
 @login_required
 def create_user():
     json_dict = request.get_json(force=True)
@@ -28,19 +29,19 @@ def create_user():
     return jsonify({"status": "success"})
 
 
-@app.route('/api/random')
+@api.route('/random')
 def random_image():
-    api = Container(app.cloud, app.cloud.container)
+    api = Container(cloud, cloud.container)
     api.get_cdn()
     image = random.choice(api.list_files())
     return jsonify({"image": os.path.join(api.links['X-Cdn-Ssl-Uri'], image)})
 
 
-@app.route('/images/<image>', methods=["GET", "POST", "DELETE"])
+@api.route('/images/<image>', methods=["GET", "POST", "DELETE"])
 @login_required
 @require_role('user')
 def upload_file(image):
-    api = Container(app.cloud, app.cloud.container)
+    api = Container(cloud, cloud.container)
     api.create_container()
     api.enable_cdn()
     api.get_cdn()

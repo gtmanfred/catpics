@@ -1,8 +1,9 @@
 # Import python libraries
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.hash import sha512_crypt
-
-from catpics import db, app, UserMixin
+from flask.ext.login import UserMixin
+from catpics.api import db
+import config
 from sqlalchemy.dialects.postgresql import JSON
 
 class User(db.Model):
@@ -17,12 +18,12 @@ class User(db.Model):
         }
 
     def generate_auth_token(self):
-        s = Serializer(app.config['SECRET_KEY'])
+        s = Serializer(config.SECRET_KEY)
         return s.dumps({ 'username': self.username})
 
     @classmethod
     def verify_auth_token(cls, token):
-        s = Serializer(app.config['SECRET_KEY'])
+        s = Serializer(config.SECRET_KEY)
         try:
             data = s.loads(token)
         except SignatureExpired:

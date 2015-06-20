@@ -7,13 +7,13 @@ import cloud
 app = Flask(__name__)
  
 app.config.from_object('config')
-app.cloud = cloud
+#app.cloud = cloud
 login_manager = LoginManager()
 login_manager.init_app(app)
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 
 from catpics.api.models import User
-from catpics.api import resources
+from catpics.api import resources, db, api as apiapp
 
 @login_manager.request_loader
 def load_user(request):
@@ -36,6 +36,7 @@ def before_request():
 
 def run():
     db.create_all()
+    app.register_blueprint(apiapp)
     app.run()
 
 if __name__ == '__main__':
