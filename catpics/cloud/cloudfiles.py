@@ -1,4 +1,8 @@
 import os
+import sys
+import imghdr
+
+from swiftclient.client import put_object
 
 from catpics.cloud.auth import CloudApi
 from catpics.libs.utils import get_entry
@@ -38,3 +42,14 @@ class Container(CloudFilesApi):
         if ret:
             return ret.text.strip().split('\n')
         return []
+
+    def add_file(self, filename, content):
+        #ret = put_object(self.endpoint, self.token, self.container, filename, content, content_type='image/jpeg')
+        image = content.read()
+        imagetype = imghdr.what(filename, image)
+        ret = self.session.put(
+            os.path.join(self.endpoint, self.container, filename),
+            files={'file': (filename, image)},
+            headers={'Content-Type': 'image/{0}'.format(imagetype)},
+        )
+        return ret

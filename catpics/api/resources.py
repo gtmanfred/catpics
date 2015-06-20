@@ -1,7 +1,10 @@
 from flask.ext.login import login_user, logout_user, login_required
 from flask import request, jsonify, abort
-from catpics import app, db, User, g
+from catpics import app, db, User, g, cloud
 from catpics.api.auth import require_role
+
+from catpics.cloud.cloudfiles import Container
+
 
 @app.route("/api/tokens", methods=["POST"])
 @login_required
@@ -31,3 +34,14 @@ def index():
 @app.route('/random')
 def random_image():
     return jsonify({"status": "in progress"})
+
+@app.route('/upload/<upload_file>', methods=["POST"])
+def upload_file(upload_file):
+    print(request.method)
+    print(request.files)
+    print(request.stream.__dict__)
+    api = Container(app.cloud, 'epel')
+    #return jsonify({"files": api.list_files})
+    api.create_container('epel')
+    api.add_file(upload_file, request.stream)
+    return jsonify({"files": api.list_files()})

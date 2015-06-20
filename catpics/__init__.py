@@ -1,12 +1,13 @@
-
 from flask import Flask, g
 from flask.ext.login import current_user, LoginManager, UserMixin
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
+import cloud
 
 app = Flask(__name__)
  
 app.config.from_object('config')
+app.cloud = cloud
 login_manager = LoginManager()
 login_manager.init_app(app)
 db = SQLAlchemy(app)
