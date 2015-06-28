@@ -2,7 +2,7 @@
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.hash import sha512_crypt
 from flask.ext.login import UserMixin
-from catpics.api import db
+from catpics import db
 import config
 from sqlalchemy.dialects.postgresql import JSON
 
