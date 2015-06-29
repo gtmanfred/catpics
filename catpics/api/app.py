@@ -5,7 +5,7 @@ from catpics import app
 
 
 def create_app():
-    app = Blueprint('api', __name__, url_prefix='/api')
+    app = Blueprint('backend', __name__, url_prefix='/api')
     api = Api(app)
 
     from catpics.api.resources import (
