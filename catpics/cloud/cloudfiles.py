@@ -2,8 +2,6 @@ import os
 import sys
 import imghdr
 
-from swiftclient.client import put_object
-
 from catpics.cloud.auth import CloudApi
 from catpics.libs.utils import get_entry
 
