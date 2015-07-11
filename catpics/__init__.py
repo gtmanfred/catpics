@@ -14,6 +14,7 @@ login_manager.login_view = '/login'
 
 from catpics.api.models import User
 import catpics.api.app
+import catpics.client.app
 
 @login_manager.request_loader
 def load_user(request):
@@ -37,7 +38,8 @@ def before_request():
 def run():
     db.create_all()
     app.register_blueprint(catpics.api.app.create_app())
-    app.run()
+    app.register_blueprint(catpics.client.app.create_app())
+    app.run(host='0.0.0.0')
 
 if __name__ == '__main__':
     run()

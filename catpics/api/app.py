@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask.ext.restful import Api
 from flask.ext.sqlalchemy import SQLAlchemy
-from catpics import app
 
 
 def create_app():

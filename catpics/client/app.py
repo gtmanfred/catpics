@@ -1,25 +1,9 @@
 from flask import Blueprint
-from flask.ext.sqlalchemy import SQLAlchemy
-from catpics import app
+
+from catpics.client import resources
 
 
 def create_app():
-    app = Blueprint('frontend', __name__, url_prefix='/api')
-
-    from catpics.api.resources import (
-        APIToken,
-        Users,
-        RandomImage,
-        Image,
-    )
-    resources = {
-        APIToken: '/tokens',
-        Users: '/users',
-        RandomImage: '/random',
-        Image: '/images/<image>',
-    }
-
-    for resource, route in resources.items():
-        api.add_resource(resource, route)
-
+    app = Blueprint('frontend', __name__)
+    app.add_url_rule('/', view_func=resources.Index.as_view('index'))
     return app
