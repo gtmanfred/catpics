@@ -1,9 +1,24 @@
-<html>
+<html ng-app="catpics">
     <head>
         <title>CAT PICTURES!</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static', filename='main.js') }}"></script>
+        <style>
+            .imageClip{
+                width: auto;
+                height: 100%;
+                overflow:hidden;
+            }
+        </style>
     </head>
-    <body>
-        <img src="{{source}}" class="img-responsive" alt="Responsive image">
+    <body ng-controller="CatPicsController">
+        {%- raw %}
+        <span ng-if="image" class="animate-if">
+            <img src="{{image}}" class="img-responsive imageClip" alt="Responsive image">
+        </span>
+        {%- endraw %}
     </body>
 </html>
