@@ -6,7 +6,7 @@ from flask import request, jsonify, abort, g
 
 import cloud
 from catpics import db
-from catpics.api.models import User
+from catpics.models import User
 from catpics.api.auth import require_role
 
 from catpics.cloud.cloudfiles import Container
