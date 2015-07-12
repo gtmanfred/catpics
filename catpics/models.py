@@ -48,6 +48,9 @@ class User(db.Model):
     @classmethod
     def get(cls, username):
         return cls.query.get(username)
+
+    def get_id(self):
+        return User.query.get(self.username).username
  
     def __repr__(self):
         return '<User %r>' % (self.username)

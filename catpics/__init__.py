@@ -17,8 +17,13 @@ import catpics.api.app
 import catpics.client.app
 
 
+@login_manager.user_loader
+def load_user(userid):
+    return User.get(userid)
+
+
 @login_manager.request_loader
-def load_user(request):
+def load_request(request):
     token = request.headers.get('X-Auth-Token')
     if token:
         return User.verify_auth_token(token)
@@ -29,12 +34,6 @@ def load_user(request):
             return None
         user = User.query.get(username)
         if user is not None and user.check_password(password):
-            session['username'] = username
-            session['password'] = password
-            return user
-    elif 'username' in session:
-        user = User.query.get(session['username'])
-        if user is not None and user.check_password(session['password']):
             return user
     return None
 
