@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 import imghdr
@@ -81,7 +82,7 @@ class Container(CloudFilesApi):
         image = content.read()
         imagetype = imghdr.what(filename, image)
         if imagetype:
-            headers = {'Content-Type': 'image/{0}'.format(imagetype)},
+            headers = {'Content-Type': 'image/{0}'.format(imagetype)}
         elif suffix in mimetypes.types_map:
             headers = {'Content-Type': mimetypes.types_map[suffix]}
         else:

@@ -1,8 +1,11 @@
 import os
 import random
+import requests
+
 from flask.ext.login import login_user, logout_user, login_required
 from flask.ext.restful import Resource
 from flask import request, jsonify, abort, g
+from werkzeug import secure_filename
 
 import cloud
 from catpics import db
@@ -10,6 +13,13 @@ from catpics.models import User
 from catpics.api.auth import require_role
 
 from catpics.cloud.cloudfiles import Container
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'webm', 'gifv'])
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 class APIToken(Resource):
     decorators = [login_required]
@@ -61,6 +71,7 @@ class Image(Resource):
         f = None
         link = request.json.get('link')
         if 'file' in request.files:
+            filename = image
             f = request.files['file'].stream
         elif isinstance(link, str) and (
                 link.startswith('http://') or
@@ -78,7 +89,7 @@ class Image(Resource):
             api.enable_cdn()
             api.get_cdn()
             api.add_file(filename, f)
-        return jsonify({"files": api.list_files()})
+        return jsonify({"success": filename})
 
     def delete(self, image):
         api = Container(cloud, cloud.container)
@@ -86,4 +97,4 @@ class Image(Resource):
         api.enable_cdn()
         api.get_cdn()
         api.delete_file(image)
-        return jsonify({"files": api.list_files()})
+        return jsonify({"success": image})

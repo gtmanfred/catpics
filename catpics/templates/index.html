@@ -7,6 +7,9 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="{{ url_for('static', filename='main.js') }}"></script>
         <style>
+            body {
+                background-color: black;
+            }
             .imageClip{
                 width: auto;
                 height: 100%;
@@ -16,15 +19,10 @@
     </head>
     <body ng-controller="CatPicsController">
         {%- raw %}
-        <span ng-if="image" class="animate-if">
-            <p>{{image}}</p>
-            <div ng-if="type == 'image'">
-                <img class="img-responsive imageClip" alt="Responsive image" src="{{image}}">
-            </div>
-            <div ng-if="type == 'video'">
-                <video class="imageClip" src="{{image}}" type="{{type}}/{{suffix}}" autoplay loop>
-            </div>
-        </span>
+        <div align="center" ng-if="image" class="animate-if">
+            <img class="img-responsive imageClip" alt="Responsive image" src="{{image}}" ng-if="type == 'image'">
+            <video class="imageClip" src="{{image}}" type="{{type}}/{{suffix}}" autoplay loop ng-if="type == 'video'">
+        </div>
         {%- endraw %}
     </body>
 </html>

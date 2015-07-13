@@ -1,6 +1,7 @@
 var myApp = angular.module('catpics', []).config(function($sceProvider) { $sceProvider.enabled(false); });
 
 myApp.controller('CatPicsController', ['$scope', '$log', '$http', function($scope, $log, $http) {
+  $scope.image = false;
   function get_picture(){
     $http.get('/api/random').
       success(function(data, status, headers, config) {
