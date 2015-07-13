@@ -36,7 +36,16 @@ class RandomImage(Resource):
         api = Container(cloud, cloud.container)
         api.get_cdn()
         image = random.choice(api.list_files())
-        return jsonify({"image": os.path.join(api.links['X-Cdn-Ssl-Uri'], image)})
+        ret = {}
+        if image.endswith('.gifv') or image.endswith('.webm'):
+            ret['type'] = 'video'
+            ret['suffix'] = 'webm'
+        else:
+            ret['type'] = 'image'
+            ret['suffix'] = image.split('.')[-1]
+        link = api.links['X-Cdn-Ssl-Uri']
+        ret['image'] = os.path.join(link, image)
+        return jsonify(ret)
 
 
 class Image(Resource):
@@ -49,11 +58,26 @@ class Image(Resource):
         return jsonify({"image": os.path.join(api.links['X-Cdn-Ssl-Uri'], image)})
 
     def post(self, image):
-        api = Container(cloud, cloud.container)
-        api.create_container()
-        api.enable_cdn()
-        api.get_cdn()
-        api.add_file(image, request.stream)
+        f = None
+        link = request.json.get('link')
+        if 'file' in request.files:
+            f = request.files['file'].stream
+        elif isinstance(link, str) and (
+                link.startswith('http://') or
+                link.startswith('https://')):
+            if link.endswith('.gifv'):
+                link = link.replace('.gifv', '.webm')
+            f = requests.get(link, stream=True)
+            f.read = lambda: f.content
+            filename = link.split('/')[-1]
+
+        if f and allowed_file(filename):
+            filename = secure_filename(filename)
+            api = Container(cloud, cloud.container)
+            api.create_container()
+            api.enable_cdn()
+            api.get_cdn()
+            api.add_file(filename, f)
         return jsonify({"files": api.list_files()})
 
     def delete(self, image):

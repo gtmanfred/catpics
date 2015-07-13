@@ -9,7 +9,7 @@ from flask.ext.login import login_user, logout_user, login_required
 from flask import render_template, request, url_for, redirect, abort, g, session
 from werkzeug import secure_filename
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'webm', 'gifv'])
 
 
 def allowed_file(filename):
@@ -47,12 +47,24 @@ class Upload(MethodView):
         return render_template('upload.html')
 
     def post(self):
-        f = request.files['file']
-        if f and allowed_file(f.filename):
-            filename = secure_filename(f.filename)
+        f = None
+        link = request.json.get('link')
+        if 'file' in request.files:
+            f = request.files['file'].stream
+        elif isinstance(link, str) and (
+                link.startswith('http://') or
+                link.startswith('https://')):
+            if link.endswith('.gifv'):
+                link = link.replace('.gifv', '.webm')
+            f = requests.get(link, stream=True)
+            f.read = lambda: f.content
+            filename = link.split('/')[-1]
+
+        if f and allowed_file(filename):
+            filename = secure_filename(filename)
             api = Container(cloud, cloud.container)
             api.create_container()
             api.enable_cdn()
             api.get_cdn()
-            api.add_file(f.filename, f.stream)
+            api.add_file(filename, f)
         return render_template('upload.html')

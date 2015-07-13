@@ -1,6 +1,7 @@
 import os
 import sys
 import imghdr
+import mimetypes
 
 from catpics.cloud.auth import CloudApi
 from catpics.libs.utils import get_entry
@@ -76,12 +77,19 @@ class Container(CloudFilesApi):
         return []
 
     def add_file(self, filename, content):
+        suffix = filename.split('.')[-1]
         image = content.read()
         imagetype = imghdr.what(filename, image)
+        if imagetype:
+            headers = {'Content-Type': 'image/{0}'.format(imagetype)},
+        elif suffix in mimetypes.types_map:
+            headers = {'Content-Type': mimetypes.types_map[suffix]}
+        else:
+            headers = {'Content-Type': 'video/webm'}
         ret = self.session.put(
             os.path.join(self.endpoint, self.container, filename),
             data=image,
-            headers={'Content-Type': 'image/{0}'.format(imagetype)},
+            headers=headers,
         )
         return ret
 
