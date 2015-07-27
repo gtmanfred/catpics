@@ -3,6 +3,7 @@ import requests
 import cloud
 from catpics.cloud.cloudfiles import Container
 from catpics.models import User
+from catpics.api.auth import require_role
 
 from flask.views import MethodView
 from flask.ext.login import login_user, logout_user, login_required
@@ -55,8 +56,7 @@ class Upload(MethodView):
 
     def post(self):
         f = None
-        print(request.form.__dict__)
-        link = request.json.get('link')
+        link = request.form.get('link')
         if 'file' in request.files:
             f = request.files['file'].stream
         elif isinstance(link, str) and (
@@ -76,3 +76,9 @@ class Upload(MethodView):
             api.get_cdn()
             api.add_file(filename, f)
         return render_template('upload.html')
+
+
+class Admin(MethodView):
+    decorators = [login_required, require_role('admin')]
+    def get(self):
+        return render_template('admin.html')
