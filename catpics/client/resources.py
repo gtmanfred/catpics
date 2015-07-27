@@ -59,6 +59,7 @@ class Upload(MethodView):
         link = request.form.get('link')
         if 'file' in request.files:
             f = request.files['file'].stream
+            filename = request.files['file'].filename
         elif isinstance(link, str) and (
                 link.startswith('http://') or
                 link.startswith('https://')):
