@@ -32,13 +32,14 @@ class Login(MethodView):
         if user is not None and user.check_password(password):
             login_user(user)
         n = request.args.get('next')
-        return redirect('/upload')
+        return redirect(n or '/')
 
 class Logout(MethodView):
     decorators = [login_required]
     def get(self):
         logout_user()
-        return redirect('/login')
+        n = request.args.get('next')
+        return redirect(n or '/')
 
 
 class Upload(MethodView):
