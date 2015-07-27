@@ -21,6 +21,11 @@ class Index(MethodView):
         return render_template('index.html')
 
 
+class Random(MethodView):
+    def get(self):
+        return render_template('random.html')
+
+
 class Login(MethodView):
     def get(self):
         return render_template('login.html')
@@ -33,6 +38,7 @@ class Login(MethodView):
             login_user(user)
         n = request.args.get('next')
         return redirect(n or '/')
+
 
 class Logout(MethodView):
     decorators = [login_required]
@@ -49,6 +55,7 @@ class Upload(MethodView):
 
     def post(self):
         f = None
+        print(request.form.__dict__)
         link = request.json.get('link')
         if 'file' in request.files:
             f = request.files['file'].stream

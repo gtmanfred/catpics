@@ -1,15 +1,9 @@
-<html>
-    <head>
-        <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
-        <style> input.entry { width: 50%; }; </style>
-        <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-    </head>
+{% extends "head.html" %}
+{% block content -%}
     <body>
-        <form class="form-horizontal" action="/upload" method="post" name="entry" enctype="multipart/form-data">
+        <form class="form-horizontal" method="post" action="/upload">
             <div class="form-group">
-                <label class="col-sm-2 control-label">Link</label>
+                <label class="col-sm-2 control-label" for="link">Link</label>
                 <div class="col-sm-10">
                     <input class="form-control entry" type="text" name="link">
                 </div>
@@ -21,4 +15,4 @@
             </div>
         </form>
     </body>
-</html>
+{% endblock -%}

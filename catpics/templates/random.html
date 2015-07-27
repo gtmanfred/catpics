@@ -1,0 +1,28 @@
+<html ng-app="catpics">
+    <head>
+        <title>CAT PICTURES!</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.17/angular.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static', filename='main.js') }}"></script>
+        <style>
+            body {
+                background-color: black;
+            }
+            .imageClip{
+                width: auto;
+                height: 100%;
+                overflow:hidden;
+            }
+        </style>
+    </head>
+    <body ng-controller="CatPicsController">
+        {%- raw %}
+        <div align="center" ng-if="image" class="animate-if">
+            <img class="img-responsive imageClip" alt="Responsive image" src="{{image}}" ng-if="type == 'image'">
+            <video class="imageClip" src="{{image}}" type="{{type}}/{{suffix}}" autoplay loop ng-if="type == 'video'">
+        </div>
+        {%- endraw %}
+    </body>
+</html>

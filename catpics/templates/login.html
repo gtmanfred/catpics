@@ -1,12 +1,5 @@
-<html>
-    <head>
-        <link rel="shortcut icon" href="//www.bighopsgrowlerstation.com/img/favicon.ico">
-        <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
-        <style> input.entry { width: 50%; }; </style>
-        <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-    </head>
+{% extends "head.html" %}
+{% block content -%}
     <body>
         <form class="form-horizontal" action="" method="post" name="entry">
             <div class="form-group">
@@ -28,4 +21,4 @@
             </div>
         </form>
     </body>
-</html>
+{% endblock -%}
