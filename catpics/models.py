@@ -9,11 +9,12 @@ from sqlalchemy.dialects.postgresql import JSON
 class User(db.Model):
     __tablename__ = 'users'
     username = db.Column(db.String(255), unique=True, primary_key=True)
+    password = db.Column(db.String(255))
     info = db.Column(JSON)
     def __init__(self, username, password, roles=[]):
         self.username = username
+        self.password = sha512_crypt.encrypt(password)
         self.info = {
-            'password': sha512_crypt.encrypt(password),
             'roles': roles
         }
 
@@ -34,7 +35,7 @@ class User(db.Model):
         return user
 
     def check_password(self, password):
-        return sha512_crypt.verify(password, self.info['password'])
+        return sha512_crypt.verify(password, self.password)
 
     def is_authenticated(self):
         return True

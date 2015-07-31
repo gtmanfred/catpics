@@ -1,6 +1,8 @@
 import requests
+from passlib.hash import sha512_crypt
 
 import cloud
+from catpics import db
 from catpics.cloud.cloudfiles import Container
 from catpics.models import User
 from catpics.api.auth import require_role
@@ -83,3 +85,39 @@ class Admin(MethodView):
     decorators = [login_required, require_role('admin')]
     def get(self):
         return render_template('admin.html')
+
+
+class Password(MethodView):
+    decorators = [login_required]
+    def get(self):
+        return render_template('password.html')
+
+    def post(self):
+        if request.form['password1'] != request.form['password2']:
+            return redirect('/passwords', 501)
+
+        user = User.query.filter_by(username=g.user.username).first()
+        user.password = sha512_crypt.encrypt(request.form['password1'])
+        db.session.commit()
+        return redirect('/')
+
+
+class Users(MethodView):
+    decorators = [login_required, require_role('admin')]
+    def post(self):
+        json_dict = {
+            'username': request.form['username'],
+            'password': request.form['password'],
+            'roles': ['users'],
+        }
+
+        if request.form.get('admin', False):
+            json_dict['roles'].append('admin')
+
+        if 'username' not in json_dict or 'password' not in json_dict:
+            abort(400)
+
+        user = User(**json_dict)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/admin')

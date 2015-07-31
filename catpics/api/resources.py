@@ -29,7 +29,7 @@ class APIToken(Resource):
 
 
 class Users(Resource):
-    decorators = [login_required]
+    decorators = [login_required, require_role('admin')]
     def post(self):
         json_dict = request.get_json(force=True)
         if 'username' not in json_dict or 'password' not in json_dict:
