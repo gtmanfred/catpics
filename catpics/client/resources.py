@@ -1,3 +1,4 @@
+from __future__ import print_function
 import requests
 from passlib.hash import sha512_crypt
 
@@ -16,7 +17,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'webm', 'gifv'])
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 class Index(MethodView):
@@ -77,7 +78,9 @@ class Upload(MethodView):
             api.create_container()
             api.enable_cdn()
             api.get_cdn()
-            api.add_file(filename, f)
+            ret = api.add_file(filename, f)
+            with open('catpics.log', 'a') as catlog:
+                print('{ret} -> {username} -> {filename}'.format(ret=ret, username=g.user.username, filename=filename), file=catlog)
         return render_template('upload.html')
 
 
