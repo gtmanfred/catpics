@@ -41,14 +41,3 @@ def load_request(request):
 @app.before_request
 def before_request():
     g.user = current_user
-
-
-def run():
-    db.create_all()
-    app.register_blueprint(catpics.api.app.create_app())
-    app.register_blueprint(catpics.client.app.create_app())
-    app.run(host='0.0.0.0')
-
-
-if __name__ == '__main__':
-    run()

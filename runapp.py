@@ -1,6 +1,6 @@
 import sys
 sys.dont_write_bytecode = True
 
-import catpics
+from catpics.wsgi import app
 
-catpics.run()
+app.run(host='0.0.0.0')
