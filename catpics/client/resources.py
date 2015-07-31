@@ -62,7 +62,7 @@ class Upload(MethodView):
         if 'file' in request.files:
             f = request.files['file'].stream
             filename = request.files['file'].filename
-        elif isinstance(link, str) and (
+        elif isinstance(link, unicode) and (
                 link.startswith('http://') or
                 link.startswith('https://')):
             if link.endswith('.gifv'):
